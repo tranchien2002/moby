@@ -8,7 +8,7 @@ db.switch_database('tracking')
 apiKey = 'EK-3hFyK-QWbpESo-oN3N5'
 app = FlaskAPI(__name__)
 
-@app.route('/getTx/<token>')
+@app.route('/getAllTx/<token>')
 def getTokenTx(token):
     query = db.query('select * from token' + token + ';')
     list_tx = list(query)
@@ -34,5 +34,15 @@ def getTopHolder(token):
         'holder': list_holder
     }
 
+@app.route('/getTx/<token>/<address>')
+def getTx(token, address):
+    query = db.query('select * from token' + token + ' where sender=\'' + address +'\';')
+    send_tx = list(query['token' + token])
+    query = db.query('select * from token' + token + ' where recipient=\'' + address +'\';')
+    receiver_tx = list(query['token' + token])
+    return {
+        'send': send_tx,
+        'receive': receiver_tx
+    }
 if __name__ == '__main__':
     app.run()

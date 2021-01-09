@@ -22,12 +22,12 @@ for e in res_list[0]:
     query_tx = db.query('select * from token' + e['address'] + ' limit 1;')
 
     if len(query_tx) == 0:
-        for tx in reversed(redata_tx):
+        for tx in reversed(data_tx):
             record = [{
                 "measurement": "token" + e['address'],
                 "tags": {
-                    "from": tx['from'],
-                    "to": tx['to']
+                    "sender": tx['from'],
+                    "recipient": tx['to']
                 },
                 "time": tx['timestamp'],
                 "fields": tx
@@ -45,8 +45,8 @@ for e in res_list[0]:
                     record = [{
                         "measurement": "token" + e['address'],
                         "tags": {
-                            "from": tx['from'],
-                            "to": tx['to']
+                            "sender": tx['from'],
+                            "recipient": tx['to']
                         },
                         "time": tx['timestamp'],
                         "fields": tx
@@ -57,8 +57,8 @@ for e in res_list[0]:
                     record = [{
                         "measurement": "token" + e['address'],
                         "tags": {
-                            "from": data_tx[i]['from'],
-                            "to": data_tx[i]['to']
+                            "sender": data_tx[i]['from'],
+                            "recipient": data_tx[i]['to']
                         },
                         "time": tx['timestamp'],
                         "fields": data_tx[i]
