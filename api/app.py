@@ -1,5 +1,8 @@
 from flask_api import FlaskAPI
 from influxdb import InfluxDBClient
+from io import BytesIO
+from flask import send_file
+import json
 import requests
 import time
 
@@ -28,7 +31,6 @@ def getToken():
 def getTopHolder(token):
     response = requests.get("https://api.ethplorer.io/getTopTokenHolders/" + token + "?apiKey=" + apiKey + "&limit=20")
     data = response.json()
-    print(data)
     list_holder = list(data['holders'])
     return {
         'holder': list_holder
@@ -44,5 +46,21 @@ def getTx(token, address):
         'send': send_tx,
         'receive': receiver_tx
     }
+
+@app.route('/getData')
+def getData():
+    query = db.query('select address from token;')
+    list_token = list(query)
+    list_token = list_token[0]
+    data = {}
+    for token in list_token:
+        query = db.query('select * from token' + token['address'] + ';')
+        list_tx = list(query)
+        data[str(token['address'])] = list_tx[0]
+    with open('data.json', 'w') as json_file:
+        json.dump(data, json_file)
+    path = './data.json'
+    return send_file(path, as_attachment=True)
+
 if __name__ == '__main__':
     app.run()
